@@ -26,7 +26,9 @@
     "eslint-plugin-svelte3": "3.2.1",
     "jwt-decode": "3.1.2",
     "postcss": "8.4.4",
+    "postcss-import": "14.0.2",
     "postcss-load-config": "3.1.0",
+    "postcss-preset-env": "7.0.1",
     "prettier": "2.5.1",
     "prettier-plugin-svelte": "2.5.1",
     "subscriptions-transport-ws": "0.11.0",
@@ -34,7 +36,7 @@
     "svelte-check": "2.2.10",
     "svelte-preprocess": "4.9.8",
     "sveltekit-web3auth": "2.4.0",
-    "tailwindcss": "2.2.19",
+    "tailwindcss": "3.0.0",
     "typescript": "4.5.2",
     "ws": "8.3.0"
   },
