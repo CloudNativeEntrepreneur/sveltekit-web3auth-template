@@ -37,7 +37,7 @@
     "svelte-preprocess": "4.9.8",
     "sveltekit-web3auth": "2.4.0",
     "tailwindcss": "3.0.0",
-    "typescript": "4.5.2",
+    "typescript": "4.5.4",
     "ws": "8.3.0"
   },
   "type": "module"
