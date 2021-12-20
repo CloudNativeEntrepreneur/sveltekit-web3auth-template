@@ -1,8 +1,8 @@
 <script lang="ts">
   import "../app.postcss";
   import { Web3Auth } from "sveltekit-web3auth";
-  import { config } from "../config";
-  import Header from "../components/shared/Header/index.svelte";
+  import { config } from "$lib/config";
+  import Header from "$lib/components/shared/Header/index.svelte";
 </script>
 
 <Header />

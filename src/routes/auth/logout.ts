@@ -1,6 +1,6 @@
 import { getServerOnlyEnvVar } from "sveltekit-web3auth";
 import { post as logout } from "sveltekit-web3auth/web3auth/routes/auth/logout";
-import { config } from "../../config";
+import { config } from "$lib/config";
 
 const clientSecret =
   getServerOnlyEnvVar(process, "WEB3AUTH_CLIENT_SECRET") ||

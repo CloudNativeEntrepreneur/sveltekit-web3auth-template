@@ -12,6 +12,9 @@
     LogoutButton,
     RefreshTokenButton,
   } from "sveltekit-web3auth";
+  import debug from "debug";
+
+  const log = debug("sveltekit-web3auth:routes/index");
 
   let accessTokenElement;
   let isAccessTokenCopied = false;
@@ -30,7 +33,7 @@
           isAccessTokenCopied = false;
         }, 1000);
       } catch (e) {
-        console.log(accessTokenElement);
+        log(accessTokenElement);
         console.error(e);
       }
     }
@@ -73,12 +76,12 @@
       </div>
       <LogoutButton class="btn btn-primary">Logout</LogoutButton>
       <RefreshTokenButton class="btn btn-primary"
-        >Refresh Token</RefreshTokenButton
+        >Refresh Tokens</RefreshTokenButton
       >
     </section>
   {:else if $authError}
     <section class="p-5 rounded-lg bg-red-400">
-      {$authError?.error_description}
+      {$authError?.errorDescription}
     </section>
   {:else if $isLoading}
     <section

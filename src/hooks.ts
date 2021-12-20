@@ -6,7 +6,7 @@ import {
 } from "sveltekit-web3auth";
 import type { Locals } from "sveltekit-web3auth/types";
 import type { ServerRequest } from "@sveltejs/kit/types/hooks";
-import { config } from "./config";
+import { config } from "$lib/config";
 
 const issuer = config.web3auth.issuer;
 const clientId = config.web3auth.clientId;
