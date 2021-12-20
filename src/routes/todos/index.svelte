@@ -8,13 +8,15 @@
   } from "@urql/svelte";
   import { config } from "$lib/config/index";
   import ws from "ws";
-  import * as stws from "subscriptions-transport-ws";
   import { ProtectedRoute } from "sveltekit-web3auth";
   import { session, page } from "$app/stores";
   import { browser } from "$app/env";
   import { goto } from "$app/navigation";
   import { get } from "svelte/store";
   import Todo from "$lib/components/todos/Todo.svelte";
+  import debug from "debug";
+
+  const log = debug("sveltekit-web3auth-template:todos");
 
   let graphqlClientInstance;
 
@@ -134,7 +136,6 @@
       graphql: config.graphql,
       fetch,
       ws,
-      stws,
     });
 
     const result = await graphqlClientInstance
@@ -176,11 +177,13 @@
   let commandTodoRemove;
 
   const handleTodosSubscription = (previousTodos = [], data) => {
+    log("new todos subscription data");
     todos = data.todos;
     return [...data.todos];
   };
 
   const handleTodosCountSubscription = (previousCount, data) => {
+    log("new todos subscription count data");
     count = data.todos_aggregate.aggregate.count;
     return count;
   };
@@ -195,7 +198,6 @@
         graphql: config.graphql,
         fetch: fetch || window.fetch,
         ws,
-        stws,
       });
       setClient(graphqlClientInstance);
     }
