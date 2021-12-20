@@ -21,7 +21,7 @@
     "cssnano": "5.0.13",
     "debug": "4.3.3",
     "dotenv-cli": "4.1.1",
-    "eslint": "8.4.1",
+    "eslint": "8.5.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-plugin-svelte3": "3.2.1",
     "jwt-decode": "3.1.2",
