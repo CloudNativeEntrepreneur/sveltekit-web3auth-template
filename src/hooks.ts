@@ -5,8 +5,11 @@ import {
   getServerOnlyEnvVar,
 } from "sveltekit-web3auth";
 import type { Locals } from "sveltekit-web3auth/types";
-import type { ServerRequest } from "@sveltejs/kit/types/hooks";
+import type { RequestEvent } from "@sveltejs/kit/types/hooks";
 import { config } from "$lib/config";
+import debug from "debug";
+
+const log = debug("sveltekit-web3auth:template:hooks");
 
 const issuer = config.web3auth.issuer;
 const clientId = config.web3auth.clientId;
@@ -15,9 +18,13 @@ const clientSecret =
   config.web3auth.clientSecret;
 const refreshTokenMaxRetries = config.web3auth.refreshTokenMaxRetries;
 
-export const handle: Handle<Locals> = async ({ request, resolve }) => {
+// https://kit.svelte.dev/docs#hooks-handle
+export const handle: Handle<Locals> = async ({ event, resolve }) => {
+  log("handle", event.request.url);
+
   // Initialization part
-  const userGen = userDetailsGenerator(request);
+  const userGen = userDetailsGenerator(event);
+
   const { value, done } = await userGen.next();
 
   if (done) {
@@ -26,39 +33,76 @@ export const handle: Handle<Locals> = async ({ request, resolve }) => {
   }
 
   // Set Cookie attributes
-  request.locals.cookieAttributes = "Path=/; HttpOnly;";
+  event.locals.cookieAttributes = "Path=/; HttpOnly;";
 
-  if (request.query.has("_method")) {
-    request.method = request.query.get("_method").toUpperCase();
-  }
-  // Handle resolve
-  const response = await resolve(request);
+  // response is the page sveltekit route that was rendered, we're
+  // intercepting it and adding headers on the way out
+  const response = await resolve(event);
 
-  // After your code ends, Populate response headers with Auth Info
-  // wrap up response by over-riding headers and status
-  if (response?.status !== 404) {
-    const extraResponse = (await userGen.next(request)).value;
-    const { Location, ...restHeaders } = extraResponse.headers;
-    // SSR Redirection
-    if (extraResponse.status === 302 && Location) {
-      response.status = extraResponse.status;
-      response.headers["Location"] = Location;
-    }
-    response.headers = { ...response.headers, ...restHeaders };
+  if (response?.status === 404) {
+    return response;
   }
-  return response;
+
+  const body = await response.text();
+
+  const authResponse = (await userGen.next(event)).value;
+  const { Location } = authResponse.headers;
+
+  log("response statuses", {
+    original: response.status,
+    auth: authResponse.status,
+  });
+
+  // SSR Redirection
+  if (authResponse.status === 302 && Location) {
+    log("REDIRECT RESPONSE");
+    const redirectResponse = {
+      ...response,
+      status: authResponse.status,
+      headers: {
+        "content-type": response.headers.get("content-type"),
+        etag: response.headers.get("etag"),
+        "permissions-policy": response.headers.get("permissions-policy"),
+        Location,
+      },
+    };
+
+    return new Response(body, redirectResponse);
+  }
+
+  if (authResponse.headers.userid) {
+    const authedResponseBase = {
+      status: response.status,
+      statusText: response.statusText,
+      headers: {
+        user: authResponse.headers.user,
+        userid: authResponse.headers.userid,
+        accesstoken: authResponse.headers.accesstoken,
+        refreshtoken: authResponse.headers.refreshtoken,
+        "set-cookie": authResponse.headers["set-cookie"],
+        "content-type": response.headers.get("content-type"),
+        etag: response.headers.get("etag"),
+        "permissions-policy": response.headers.get("permissions-policy"),
+      },
+    };
+
+    return new Response(body, authedResponseBase);
+  }
+
+  return new Response(body, response);
 };
 
 /** @type {import('@sveltejs/kit').GetSession} */
-export const getSession: GetSession = async (
-  request: ServerRequest<Locals>
-) => {
+export const getSession: GetSession = async (event: RequestEvent<Locals>) => {
+  log("getting user session...");
+
   const userSession = await getUserSession(
-    request,
+    event,
     issuer,
     clientId,
     clientSecret,
     refreshTokenMaxRetries
   );
+
   return userSession;
 };
