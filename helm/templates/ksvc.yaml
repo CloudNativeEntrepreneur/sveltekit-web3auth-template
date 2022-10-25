@@ -18,6 +18,7 @@ spec:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.service.internalPort }}
+          protocol: TCP
         env:
         - name: VITE_GRAPHQL_URL
           value: https://example-hasura.{{ .Release.Namespace }}.jx.cloudnativeentrepreneur.dev/v1/graphql
