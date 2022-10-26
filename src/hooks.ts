@@ -11,7 +11,7 @@ import debug from "debug";
 
 const log = debug("sveltekit-web3auth:template:hooks");
 
-const issuer = config.web3auth.issuer;
+const issuer = config.web3auth.issuerInternal;
 const clientId = config.web3auth.clientId;
 const clientSecret =
   getServerOnlyEnvVar(process, "WEB3AUTH_CLIENT_SECRET") ||
