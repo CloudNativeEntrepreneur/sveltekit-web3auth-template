@@ -68,7 +68,41 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache
         cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache,mode=max
+
+    - name: Setup Helm
+      uses: azure/setup-helm@v3
+
+    - name: Checkout App
+      uses: actions/checkout@v3
+      with:
+        path: app
     
+    - name: Checkout Preview Environments Project
+      uses: actions/checkout@v3
+      with: 
+        path: previews
+        repository: cloudnativeentrepreneur/example-previews
+        persist-credentials: false
+        fetch-depth: 0
+
+    - name: create preview from helm template
+      run:
+        - helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
+
+    - name: Commit Prod Env Changes
+      run: |
+        cd previews
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"   
+        git add .
+        git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
+
+    - name: Push prod
+      uses: ad-m/github-push-action@master
+      with:
+        path: previews
+        github_token: ${{ secrets.GH_ORG_TOKEN }}
+        repository: cloudnativeentrepreneur/example-prod-env
     # - name: Setup Kube config
     #   uses: azure/k8s-set-context@v3
     #   with:
@@ -96,3 +130,4 @@ jobs:
     # - name: Test
     #   run: |
     #     echo "I was to lazy to write tests"
+
