@@ -13,7 +13,10 @@ service:
   name: sveltekit-web3auth
   internalPort: 3000
 
-knative: {}
+knative:
+  minScale: 1
+  maxScale: 3
+  concurrencyTarget: 100
 
 probePath: /
 livenessProbe:

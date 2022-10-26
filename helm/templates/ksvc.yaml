@@ -12,20 +12,37 @@ spec:
   template:
     metadata:
       annotations:
-        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/minScale: {{ .Values.knative.minScale | quote }}
+        autoscaling.knative.dev/maxScale: {{ .Values.knative.maxScale | quote }}
+        autoscaling.knative.dev/target: {{ .Values.knative.concurrencyTarget | quote }}
+{{- if .Values.podsLabels }}
+      labels:
+{{ toYaml .Values.podsLabels | indent 8 }}
+{{- end }}
     spec:
+      # affinity:
+      #   podAntiAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #     - podAffinityTerm:
+      #         labelSelector:
+      #           matchExpressions:
+      #           - key: serving.knative.dev/service
+      #             operator: In
+      #             values:
+      #             - {{ .Values.service.name }}
+      #         topologyKey: failure-domain.beta.kubernetes.io/zone
+      #       weight: 100
       containers:
       - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
         env:
-        - name: VITE_GRAPHQL_URL
-          value: https://example-hasura.{{ .Release.Namespace }}.jx.cloudnativeentrepreneur.dev/v1/graphql
-        - name: VITE_GRAPHQL_INTERNAL_URL
-          value: https://example-hasura.{{ .Release.Namespace }}.jx.cloudnativeentrepreneur.dev/v1/graphql
-        - name: VITE_GRAPHQL_WS_URL
-          value: wss://example-hasura.{{ .Release.Namespace }}.jx.cloudnativeentrepreneur.dev/v1/graphql
+        - name: WEB3AUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: web3auth
+              key: clientSecret
 {{- range $pkey, $pval := .Values.env }}
         - name: {{ $pkey }}
           value: {{ quote $pval }}
