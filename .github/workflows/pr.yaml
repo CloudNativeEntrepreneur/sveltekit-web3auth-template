@@ -88,8 +88,8 @@ jobs:
         fetch-depth: 0
 
     - name: create preview from helm template
-      run:
-        - helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
+      run: |
+        helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
 
     - name: Commit Prod Env Changes
       run: |
