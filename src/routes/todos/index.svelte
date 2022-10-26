@@ -133,7 +133,7 @@
     };
 
     graphqlClientInstance = await graphQLClient({
-      id: `${userAddress || "anonymous"}-todos`,
+      id: `${userAddress}`,
       session,
       graphql: config.graphql,
       fetch,
