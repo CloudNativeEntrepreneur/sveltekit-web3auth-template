@@ -90,7 +90,6 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GH_ORG_TOKEN }}
-        branch: pr-${{ github.event.pull_request.number }}
         tags: true
 
     - name: Setup Helm
