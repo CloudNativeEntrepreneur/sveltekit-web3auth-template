@@ -32,6 +32,11 @@ jobs:
   preview:
     # needs: quality
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: write
+
     steps:
 
     - name: downcase REPO
