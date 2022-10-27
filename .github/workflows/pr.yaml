@@ -82,11 +82,8 @@ jobs:
 
     - name: create preview from helm template
       run: |
-        ls -la
-        ls -la previews
-        ls -la previews/helm
-        ls -la previews/helm/templates
-        helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
+        mkrdir -p previews/helm/templates
+        helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
 
     - name: Commit Prod Env Changes
       run: |
