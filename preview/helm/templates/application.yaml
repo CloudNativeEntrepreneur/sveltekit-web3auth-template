@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: example-previews
+  project: example-preview-envs
   source:
     path: helm
     repoURL: https://github.com/cloudnativeentrepreneur/sveltekit-web3auth-template.git
