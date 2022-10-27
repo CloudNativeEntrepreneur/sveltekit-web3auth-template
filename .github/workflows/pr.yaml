@@ -90,9 +90,10 @@ jobs:
         cd previews
         ls helm/templates
         cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
-        git config --local user.name "${{ github.actor }}"   
+        git config --local user.email "pat@patscott.io"   
+        git config --local user.name "patrickleet"   
         git add .
-        git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
+        git commit -m "feat: upserting preview env - ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
 
     - name: Push prod
       uses: ad-m/github-push-action@master
