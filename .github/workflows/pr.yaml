@@ -17,17 +17,21 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    
+    - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run lint --if-present
-    - run: npm run build --if-present
-    - run: npm run test --if-present
-    - run: npx codecov
+    - name: Run Npm Quality Scripts
+      run: |
+        npm ci
+        npm run lint --if-present
+        npm run build --if-present
+        npm run test --if-present
+        npx codecov
 
   preview:
     # needs: quality
@@ -84,6 +88,7 @@ jobs:
       with: 
         path: previews
         repository: cloudnativeentrepreneur/example-preview-envs
+        persist-credentials: false
 
     - name: create preview from helm template
       run: |
@@ -95,8 +100,8 @@ jobs:
         cd previews
         ls helm/templates
         cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
-        git config --local user.email "pat@patscott.io"   
-        git config --local user.name "patrickleet"   
+        git config --local user.email "github-actions[bot]@users.noreply.github.com""   
+        git config --local user.name "github-actions[bot]"   
         git add .
         git commit -m "feat: upserting preview env - ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
 
