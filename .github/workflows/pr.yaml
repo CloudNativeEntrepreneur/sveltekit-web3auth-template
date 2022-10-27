@@ -30,7 +30,7 @@ jobs:
     - run: npx codecov
 
   preview:
-    needs: quality
+    # needs: quality
     runs-on: ubuntu-latest
     steps:
 
@@ -82,6 +82,7 @@ jobs:
 
     - name: create preview from helm template
       run: |
+        ls -la
         helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
 
     - name: Commit Prod Env Changes
