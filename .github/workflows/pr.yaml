@@ -103,7 +103,7 @@ jobs:
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"   
         git add .
-        git commit -m "feat: upserting preview env - ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
+        git commit -m "${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
 
     - name: Push Preview Env Changes
       uses: ad-m/github-push-action@master
