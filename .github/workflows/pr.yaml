@@ -85,13 +85,12 @@ jobs:
         mkdir -p previews/helm/templates
         helm template preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
 
-    - name: Commit Prod Env Changes
+    - name: Commit Preview Env Changes
       run: |
         cd previews
         ls helm/templates
         cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"   
+        git config --local user.name "{{ github.actor }}""   
         git add .
         git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
 
@@ -102,25 +101,4 @@ jobs:
         github_token: ${{ secrets.GH_ORG_TOKEN }}
         repository: cloudnativeentrepreneur/example-preview-envs
 
-    # - name: Deploy preview
-    #   run: |
-    #     # Install vCluster
-    #     curl -s -L "https://github.com/loft-sh/vcluster/releases/latest" | sed -nE 's!.*"([^"]*vcluster-linux-amd64)".*!https://github.com\1!p' | xargs -n 1 curl -L -o vcluster && chmod +x vcluster;
-    #     sudo mv vcluster /usr/local/bin;
-
-    #     # Create a cluster
-    #     vcluster create example-hasura-pr-${{ github.event.pull_request.number }} --namespace prs --expose 
-    #     vcluster connect example-hasura-pr-${{ github.event.pull_request.number }} --namespace prs
-    #     export KUBECONFIG=$PWD/kubeconfig.yaml
-    #     sleep 5
-    #     kubectl get ingresses
-
-    #     # Deploy
-    #     cd kustomize/overlays/preview
-    #     kustomize edit set image ${{ env.REPO }}=${{ env.REPO }}:pr-${{ github.event.pull_request.number }}
-    #     kustomize build | kubectl apply --filename -
-    #     kubectl rollout status deployment example-hasura
-    # - name: Test
-    #   run: |
-    #     echo "I was to lazy to write tests"
 
