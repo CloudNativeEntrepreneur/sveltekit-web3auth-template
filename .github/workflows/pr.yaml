@@ -78,7 +78,7 @@ jobs:
       uses: actions/checkout@v3
       with: 
         path: previews
-        repository: cloudnativeentrepreneur/example-previews
+        repository: cloudnativeentrepreneur/example-preview-envs
 
     - name: create preview from helm template
       run: |
@@ -88,6 +88,8 @@ jobs:
     - name: Commit Prod Env Changes
       run: |
         cd previews
+        ls helm/templates
+        cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"   
         git add .
@@ -96,9 +98,9 @@ jobs:
     - name: Push prod
       uses: ad-m/github-push-action@master
       with:
-        path: previews
+        directory: previews
         github_token: ${{ secrets.GH_ORG_TOKEN }}
-        repository: cloudnativeentrepreneur/example-prod-env
+        repository: cloudnativeentrepreneur/example-preview-envs
 
     # - name: Deploy preview
     #   run: |
