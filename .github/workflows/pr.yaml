@@ -98,12 +98,7 @@ jobs:
         path: previews
         github_token: ${{ secrets.GH_ORG_TOKEN }}
         repository: cloudnativeentrepreneur/example-prod-env
-    # - name: Setup Kube config
-    #   uses: azure/k8s-set-context@v3
-    #   with:
-    #     method: kubeconfig
-    #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
-    
+
     # - name: Deploy preview
     #   run: |
     #     # Install vCluster
