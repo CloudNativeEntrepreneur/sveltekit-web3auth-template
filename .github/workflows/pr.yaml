@@ -90,7 +90,7 @@ jobs:
         cd previews
         ls helm/templates
         cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
-        git config --local user.name "{{ github.actor }}""   
+        git config --local user.name "{{ github.actor }}"   
         git add .
         git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
 
