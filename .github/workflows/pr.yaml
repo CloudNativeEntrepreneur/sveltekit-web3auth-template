@@ -91,7 +91,7 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GH_ORG_TOKEN }}
-        branch: pr-${{ github.event.pull_request.number }}
+        branch: ${{ github.base_ref }}
         tags: true
 
     - name: Setup Helm
@@ -104,7 +104,7 @@ jobs:
         repository: cloudnativeentrepreneur/example-preview-envs
         persist-credentials: false
 
-    - name: create preview from helm template
+    - name: Create Preview from Helm template
       run: |
         mkdir -p previews/helm/templates
         helm template preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} --set baseRef=${{ github.base_ref }}  > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
@@ -119,7 +119,7 @@ jobs:
         git add .
         git commit -m "feat: upserting preview env - ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
 
-    - name: Push prod
+    - name: Push Preview Env Changes
       uses: ad-m/github-push-action@master
       with:
         directory: previews
