@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: example-ui-preview-pr-{{ .Values.pr }}-resources
+  name: example-ui-{{ .Values.pr }}-resources
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -15,7 +15,7 @@ spec:
     helm:
       version: v3
   destination:
-    namespace: example-ui-preview-pr-{{ .Values.pr }}
+    namespace: example-ui-{{ .Values.pr }}
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
