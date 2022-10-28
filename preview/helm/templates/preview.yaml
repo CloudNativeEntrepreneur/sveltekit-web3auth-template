@@ -15,7 +15,7 @@ spec:
       version: v3
       values: |
         image:
-          tag: {{ .Values.pr }}
+          tag: {{ .Values.tag }}
         env:
           DEBUG: sveltekit-web3auth:*
   destination:
