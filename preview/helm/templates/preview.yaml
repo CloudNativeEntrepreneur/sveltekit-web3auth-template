@@ -16,6 +16,8 @@ spec:
       values: |
         image:
           tag: {{ .Values.pr }}
+        env:
+          DEBUG: sveltekit-web3auth:*
   destination:
     namespace: example-ui-preview-{{ .Values.pr }}
     server: https://kubernetes.default.svc
