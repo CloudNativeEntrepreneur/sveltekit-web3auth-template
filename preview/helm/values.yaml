@@ -1,1 +1,3 @@
-pr: pr-0
+pr:
+headRef:
+tag:

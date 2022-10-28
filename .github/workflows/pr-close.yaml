@@ -10,28 +10,23 @@ jobs:
     
     steps:
 
-    - name: downcase REPO
-      run: |
-        echo "REPO=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
-
-    - name: Checkout
+    - name: Checkout Preview Environments Project
       uses: actions/checkout@v3
+      with: 
+        repository: cloudnativeentrepreneur/example-preview-envs
+        persist-credentials: false
 
-    - name: test
+    - name: Commit Preview Env Changes
       run: |
-        echo "Test"
+        rm helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"   
+        git add .
+        git commit -m "remove: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
 
-    # - name: Setup Kube config
-    #   uses: azure/k8s-set-context@v3
-    #   with:
-    #     method: kubeconfig
-    #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
-
-    # - name: Delete preview
-    #   run: |
-    #     # Install vCluster
-    #     curl -s -L "https://github.com/loft-sh/vcluster/releases/latest" | sed -nE 's!.*"([^"]*vcluster-linux-amd64)".*!https://github.com\1!p' | xargs -n 1 curl -L -o vcluster && chmod +x vcluster;
-    #     sudo mv vcluster /usr/local/bin;
-
-    #     # Delete the cluster
-    #     vcluster delete demo-hasura-pr-${{ github.event.pull_request.number }} --namespace prs
+    - name: Push Preview Env Changes
+      uses: ad-m/github-push-action@master
+      with:
+        directory: previews
+        github_token: ${{ secrets.GH_ORG_TOKEN }}
+        repository: cloudnativeentrepreneur/example-preview-envs

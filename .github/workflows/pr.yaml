@@ -17,21 +17,30 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v2
+    
+    - uses: actions/checkout@v3
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - run: npm ci
-    - run: npm run lint --if-present
-    - run: npm run build --if-present
-    - run: npm run test --if-present
-    - run: npx codecov
+    - name: Run Npm Quality Scripts
+      run: |
+        npm ci
+        npm run lint --if-present
+        npm run build --if-present
+        npm run test --if-present
+        npx codecov
 
   preview:
-    needs: quality
+    # needs: quality
     runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+      contents: write
+
     steps:
 
     - name: downcase REPO
@@ -67,69 +76,40 @@ jobs:
         push: true
         tags: |
           ${{ steps.meta.outputs.tags }}
+          ghcr.io/${{ env.REPO }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache
         cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache,mode=max
 
     - name: Setup Helm
       uses: azure/setup-helm@v3
-
-    - name: Checkout App
-      uses: actions/checkout@v3
-      with:
-        path: app
     
     - name: Checkout Preview Environments Project
       uses: actions/checkout@v3
       with: 
         path: previews
-        repository: cloudnativeentrepreneur/example-previews
+        repository: cloudnativeentrepreneur/example-preview-envs
         persist-credentials: false
-        fetch-depth: 0
 
-    - name: create preview from helm template
-      run:
-        - helm template app/preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} > previews/helm/templates/pr-${{ github.event.pull_request.number }}.yaml
+    - name: Create Preview from Helm template
+      run: |
+        mkdir -p previews/helm/templates
+        helm template preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} --set tag=pr-${{ github.event.pull_request.number }}-${{ github.sha }} --set headRef=${{ github.head_ref }}  > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
 
-    - name: Commit Prod Env Changes
+    - name: Commit Preview Env Changes
       run: |
         cd previews
+        cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"   
         git add .
-        git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
+        git commit -m "promote: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
 
-    - name: Push prod
+    - name: Push Preview Env Changes
       uses: ad-m/github-push-action@master
       with:
-        path: previews
+        directory: previews
         github_token: ${{ secrets.GH_ORG_TOKEN }}
-        repository: cloudnativeentrepreneur/example-prod-env
-    # - name: Setup Kube config
-    #   uses: azure/k8s-set-context@v3
-    #   with:
-    #     method: kubeconfig
-    #     kubeconfig: ${{ secrets.KUBE_CONFIG }}
-    
-    # - name: Deploy preview
-    #   run: |
-    #     # Install vCluster
-    #     curl -s -L "https://github.com/loft-sh/vcluster/releases/latest" | sed -nE 's!.*"([^"]*vcluster-linux-amd64)".*!https://github.com\1!p' | xargs -n 1 curl -L -o vcluster && chmod +x vcluster;
-    #     sudo mv vcluster /usr/local/bin;
+        repository: cloudnativeentrepreneur/example-preview-envs
 
-    #     # Create a cluster
-    #     vcluster create example-hasura-pr-${{ github.event.pull_request.number }} --namespace prs --expose 
-    #     vcluster connect example-hasura-pr-${{ github.event.pull_request.number }} --namespace prs
-    #     export KUBECONFIG=$PWD/kubeconfig.yaml
-    #     sleep 5
-    #     kubectl get ingresses
-
-    #     # Deploy
-    #     cd kustomize/overlays/preview
-    #     kustomize edit set image ${{ env.REPO }}=${{ env.REPO }}:pr-${{ github.event.pull_request.number }}
-    #     kustomize build | kubectl apply --filename -
-    #     kubectl rollout status deployment example-hasura
-    # - name: Test
-    #   run: |
-    #     echo "I was to lazy to write tests"
 
