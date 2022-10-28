@@ -76,7 +76,7 @@ jobs:
         push: true
         tags: |
           ${{ steps.meta.outputs.tags }}
-          ghcr.io/${{ env.REPO }}:${{ github.event.pull_request.number }}-${{ github.sha }}
+          ghcr.io/${{ env.REPO }}:pr-${{ github.event.pull_request.number }}-${{ github.sha }}
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache
         cache-to: type=registry,ref=ghcr.io/${{ env.REPO }}:buildcache,mode=max
@@ -94,7 +94,7 @@ jobs:
     - name: Create Preview from Helm template
       run: |
         mkdir -p previews/helm/templates
-        helm template preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} --set tag=${{ github.event.pull_request.number }}-${{ github.sha }} --set headRef=${{ github.head_ref }}  > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
+        helm template preview/helm/ --set pr=pr-${{ github.event.pull_request.number }} --set tag=pr-${{ github.event.pull_request.number }}-${{ github.sha }} --set headRef=${{ github.head_ref }}  > previews/helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
 
     - name: Commit Preview Env Changes
       run: |
@@ -106,7 +106,7 @@ jobs:
         git add .
         if [[ `git status --porcelain` ]]; then
           # Changes
-          git commit -m "${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
+          git commit -m "promote: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
         else
           # No changes
         fi
