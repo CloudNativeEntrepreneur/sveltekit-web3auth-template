@@ -99,17 +99,11 @@ jobs:
     - name: Commit Preview Env Changes
       run: |
         cd previews
-        ls helm/templates
         cat helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"   
         git add .
-        if [[ `git status --porcelain` ]]; then
-          # Changes
-          git commit -m "promote: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
-        else
-          # No changes
-        fi
+        git commit -m "promote: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} ${{ github.sha }}"
 
     - name: Push Preview Env Changes
       uses: ad-m/github-push-action@master
