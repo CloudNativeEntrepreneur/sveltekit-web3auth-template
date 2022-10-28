@@ -20,13 +20,13 @@ knative:
 
 probePath: /
 livenessProbe:
-  initialDelaySeconds: 90
+  initialDelaySeconds: 0
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
 readinessProbe:
-  initialDelaySeconds: 90
-  failureThreshold: 1
+  initialDelaySeconds: 0
+  failureThreshold: 3
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
