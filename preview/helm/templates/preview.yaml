@@ -19,7 +19,7 @@ spec:
         env:
           DEBUG: sveltekit-web3auth:*
   destination:
-    namespace: example-ui-{{ .Values.pr }}
+    namespace: example-ui-{{ .Values.pr }}-preview
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
