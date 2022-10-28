@@ -15,7 +15,7 @@ spec:
     helm:
       version: v3
   destination:
-    namespace: example-ui-{{ .Values.pr }}
+    namespace: example-ui-{{ .Values.pr }}-preview
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
