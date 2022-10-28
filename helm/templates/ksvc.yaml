@@ -41,7 +41,7 @@ spec:
         - name: WEB3AUTH_CLIENT_SECRET
           valueFrom:
             secretKeyRef:
-              name: web3auth
+              name: {{ .Values.service.name }}-web3auth
               key: clientSecret
 {{- range $pkey, $pval := .Values.env }}
         - name: {{ $pkey }}
