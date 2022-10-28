@@ -112,9 +112,18 @@ jobs:
         github_token: ${{ secrets.GH_ORG_TOKEN }}
         repository: cloudnativeentrepreneur/example-preview-envs
 
-    - name: Comment on PR with Preview URL
-      uses: peter-evans/create-or-update-comment@v1
+    - name: Find Comment
+      uses: peter-evans/find-comment@v2
+      id: fc
       with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+        body-includes: Build output
+
+    - name: Create or update comment
+      uses: peter-evans/create-or-update-comment@v2
+      with:
+        comment-id: ${{ steps.fc.outputs.comment-id }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Your preview environment has been published! :rocket:
@@ -124,5 +133,6 @@ jobs:
           You can verify the PR is ready with `kubectl`:
 
           ```bash
-          kubectl get ksvc -n ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }} -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}'
+          kubectl get ksvc -n ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}-preview
           ```
+        edit-mode: replace
