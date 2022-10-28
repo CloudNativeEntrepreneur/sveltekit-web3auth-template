@@ -27,6 +27,5 @@ jobs:
     - name: Push Preview Env Changes
       uses: ad-m/github-push-action@master
       with:
-        directory: previews
         github_token: ${{ secrets.GH_ORG_TOKEN }}
         repository: cloudnativeentrepreneur/example-preview-envs
