@@ -1,0 +1,23 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: example-ui-preview-pr-{{ .Values.pr }}-resources
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: example-preview-envs
+  source:
+    path: resources/preview
+    repoURL: https://github.com/cloudnativeentrepreneur/example-preview-envs.git
+    targetRevision: HEAD
+    helm:
+      version: v3
+  destination:
+    namespace: example-ui-preview-pr-{{ .Values.pr }}
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      selfHeal: true
+      prune: true
