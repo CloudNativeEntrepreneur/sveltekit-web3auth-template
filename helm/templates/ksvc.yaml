@@ -33,7 +33,8 @@ spec:
       #         topologyKey: failure-domain.beta.kubernetes.io/zone
       #       weight: 100
       containers:
-      - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+      - name: user-container
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
         ports:
         - containerPort: {{ .Values.service.internalPort }}
           protocol: TCP
@@ -50,16 +51,17 @@ spec:
         livenessProbe:
           httpGet:
             path: {{ .Values.livenessProbe.probePath | default .Values.probePath }}
-          initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            port: 0
           periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
           successThreshold: {{ .Values.livenessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
         readinessProbe:
           httpGet:
             path: {{ .Values.livenessProbe.probePath | default .Values.probePath }}
-          initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            port: 0
           periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
           successThreshold: {{ .Values.readinessProbe.successThreshold }}
           timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
         resources:
 {{ toYaml .Values.resources | indent 10 }}
