@@ -78,14 +78,17 @@ jobs:
 
     - name: Commit Prod Env Changes
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"   
-        git add .
-        if [[ `git status --porcelain` ]]; then
-          # Changes
+        if output=$(git status --porcelain) && [ -z "$output" ]; then
+          # Working directory clean
+
+          echo "No changes to commit"
+        else 
+          # Uncommitted changes
+
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"   
+          git add -A
           git commit -m "feat: Promoting ${{ github.event.repository.name }} to ${{ github.ref_name }}"
-        else
-          # No changes
         fi
 
     - name: Push prod
