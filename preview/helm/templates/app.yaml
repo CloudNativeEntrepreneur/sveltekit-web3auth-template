@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: example-ui-{{ .Values.pr }}-preview
+  name: example-ui-{{ .Values.pr }}-preview-app
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io

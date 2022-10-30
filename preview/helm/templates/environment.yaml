@@ -2,16 +2,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: example-ui-{{ .Values.pr }}-preview-resources
+  name: example-ui-{{ .Values.pr }}-preview-environment
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: example-preview-envs
   source:
-    path: resources/preview
-    repoURL: https://github.com/cloudnativeentrepreneur/example-preview-envs.git
-    targetRevision: HEAD
+    path: helm
+    repoURL: https://github.com/cloudnativeentrepreneur/environment.git
+    targetRevision: v0.2.0
     helm:
       version: v3
   destination:
