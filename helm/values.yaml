@@ -18,6 +18,8 @@ knative:
   maxScale: 3
   concurrencyTarget: 100
 
+local: false
+
 probePath: /
 livenessProbe:
   initialDelaySeconds: 0
