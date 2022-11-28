@@ -3,23 +3,18 @@
 # Declare variables to be passed into your templates.
 image:
   repository: ghcr.io/cloudnativeentrepreneur/sveltekit-web3auth-template
-  tag: latest
+  tag: v0.14.1
   pullPolicy: IfNotPresent
-
 # define environment variables here as a map of key: value
 env:
-
 service:
   name: sveltekit-web3auth-template
   internalPort: 3000
-
 knative:
   minScale: 1
   maxScale: 3
   concurrencyTarget: 100
-
 local: false
-
 probePath: /
 livenessProbe:
   initialDelaySeconds: 0
@@ -32,7 +27,6 @@ readinessProbe:
   periodSeconds: 10
   successThreshold: 1
   timeoutSeconds: 1
-
 resources:
   limits:
     cpu: '1'
@@ -40,4 +34,3 @@ resources:
   requests:
     cpu: 50m
     memory: 256Mi
-
