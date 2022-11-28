@@ -6,6 +6,7 @@ node_modules/**
 .lighthouse/**
 helm/**
 preview/**
+promote/**
 src/lib/env.js
 coverage/**
 src/stories/Introduction.stories.mdx
