@@ -17,6 +17,7 @@ jobs:
       environment_repository: CloudNativeEntrepreneur/example-local-env
       project: example-local-env
       pull_request: true
+      name: example-ui
       values: |
         # Set from promote job of CloudNativeEntrepreneur/sveltekit-web3auth-template
         local: true
@@ -24,6 +25,7 @@ jobs:
   promote-prod:
     uses: CloudNativeEntrepreneur/actions/.github/workflows/gitops-promote-helm.yaml@main
     secrets: inherit
+    name: example-ui
     with:
       environment_repository: CloudNativeEntrepreneur/example-prod-env
       project: example-prod-env
