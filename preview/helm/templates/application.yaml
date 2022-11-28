@@ -1,29 +1,25 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: example-ui-{{ .Values.pr }}-preview-app
+  name: {{ .Values.name }}-{{ .Values.pr }}-preview-app
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: example-preview-envs
+  project: {{ .Values.project }}
   source:
     path: helm
-    repoURL: https://github.com/cloudnativeentrepreneur/sveltekit-web3auth-template.git
+    repoURL: https://github.com/{{ .Values.repository }}.git
     targetRevision: {{ .Values.headRef }}
     helm:
       version: v3
       values: |
         image:
           tag: {{ .Values.tag }}
-        env:
-          DEBUG: sveltekit-web3auth:*
   destination:
-    namespace: example-ui-{{ .Values.pr }}-preview
+    namespace: {{ .Values.name }}-{{ .Values.pr }}-preview
     server: https://kubernetes.default.svc
   syncPolicy:
     automated:
       selfHeal: true
       prune: true
-    syncOptions:
-      - CreateNamespace=true

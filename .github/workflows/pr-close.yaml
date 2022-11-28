@@ -5,43 +5,8 @@ on:
 
 jobs:
   
-  pr-close:
-    runs-on: ubuntu-latest
-
-    permissions:
-      issues: write
-      pull-requests: write
-      contents: write
-    
-    steps:
-
-    - name: Checkout Preview Environments Project
-      uses: actions/checkout@v3
-      with: 
-        repository: cloudnativeentrepreneur/example-preview-envs
-        persist-credentials: false
-
-    - name: Commit Preview Env Changes
-      run: |
-        rm helm/templates/${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}.yaml
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"   
-        git add .
-        git commit -m "remove: ${{ github.event.repository.name }}-pr-${{ github.event.pull_request.number }}"
-
-    - name: Push Preview Env Changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GH_ORG_TOKEN }}
-        repository: cloudnativeentrepreneur/example-preview-envs
-
-    - name: Create comment about garbage collection
-      uses: peter-evans/create-or-update-comment@v2
-      with:
-        comment-id: ${{ steps.fc.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Your preview environment has been removed. It will be garbage collected soon.
-
-          To create a new preview environment, open a new pull request.
-        edit-mode: replace
+  preview-cleanup:
+    uses: CloudNativeEntrepreneur/actions/.github/workflows/gitops-preview-cleanup.yaml@main
+    secrets: inherit
+    with:
+      environment_repository: CloudNativeEntrepreneur/example-preview-envs
