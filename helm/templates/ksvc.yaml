@@ -1,0 +1,70 @@
+{{- if .Values.local }}
+{{- else }}
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: {{ .Values.service.name }}
+  labels:
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+  annotations:
+{{- if .Values.knative.subdomain }}
+    custom-hostname: {{ .Values.knative.subdomain }}
+{{- end }}
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: {{ .Values.knative.minScale | quote }}
+        autoscaling.knative.dev/maxScale: {{ .Values.knative.maxScale | quote }}
+        autoscaling.knative.dev/target: {{ .Values.knative.concurrencyTarget | quote }}
+{{- if .Values.podsLabels }}
+      labels:
+{{ toYaml .Values.podsLabels | indent 8 }}
+{{- end }}
+    spec:
+      # affinity:
+      #   podAntiAffinity:
+      #     preferredDuringSchedulingIgnoredDuringExecution:
+      #     - podAffinityTerm:
+      #         labelSelector:
+      #           matchExpressions:
+      #           - key: serving.knative.dev/service
+      #             operator: In
+      #             values:
+      #             - {{ .Values.service.name }}
+      #         topologyKey: failure-domain.beta.kubernetes.io/zone
+      #       weight: 100
+      containers:
+      - name: user-container
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.internalPort }}
+          protocol: TCP
+        env:
+        - name: WEB3AUTH_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.service.name }}-web3auth
+              key: clientSecret
+{{- range $pkey, $pval := .Values.env }}
+        - name: {{ $pkey }}
+          value: {{ quote $pval }}
+{{- end }}
+        livenessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.probePath | default .Values.probePath }}
+            port: 0
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        readinessProbe:
+          httpGet:
+            path: {{ .Values.livenessProbe.probePath | default .Values.probePath }}
+            port: 0
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+        resources:
+{{ toYaml .Values.resources | indent 10 }}
+{{- end }}

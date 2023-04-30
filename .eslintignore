@@ -1,0 +1,10 @@
+.svelte-kit/**
+static/**
+build/**
+node_modules/**
+.husky/**
+.lighthouse/**
+helm/**
+preview/**
+.gitignore
+sveltekit-web3auth/

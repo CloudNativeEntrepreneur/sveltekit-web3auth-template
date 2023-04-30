@@ -1,5 +1,7 @@
 # sveltekit-web3auth-template
 
+NOTE: This example was created in 2021 with a beta version of SvelteKit. There have been major breaking changes since then, and therefore, updating the svelte dependencies will break the project. I just kept it around as an example cause it's working as is, and this was less effort than building a new example altogther!
+
 # create-svelte
 
 Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte);

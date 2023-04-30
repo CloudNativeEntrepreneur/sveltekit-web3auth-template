@@ -4,6 +4,6 @@ import { config } from "$lib/config";
 const clientSecret =
   getServerOnlyEnvVar(process, "WEB3AUTH_CLIENT_SECRET") ||
   config.web3auth.clientSecret;
-const issuer = config.web3auth.issuer;
+const issuer = config.web3auth.issuerInternal;
 
 export const post = getUsersPostHandler(clientSecret, issuer);

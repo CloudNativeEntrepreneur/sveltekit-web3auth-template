@@ -1,0 +1,5 @@
+name: sveltekit-web3auth-template
+version: HEAD
+project: dev
+repository: CloudNativeEntrepreneur/sveltekit-web3auth-template
+values: ""
