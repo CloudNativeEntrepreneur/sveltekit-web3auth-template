@@ -1,4 +1,4 @@
-FROM node:17.4.0-alpine3.14 AS build
+FROM node:17.9.1-alpine3.14 AS build
 
 WORKDIR /build
 
@@ -13,7 +13,7 @@ COPY .env.production .env.production
 RUN npm run build
 RUN npm prune --production
 
-FROM node:17.4.0-alpine3.14
+FROM node:17.9.1-alpine3.14
 
 EXPOSE 3000
 WORKDIR /usr/src/service
